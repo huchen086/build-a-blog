@@ -23,7 +23,10 @@ from datetime import datetime
 template_dir = os.path.join(os.path.dirname(__file__), "templates")
 jinja_env = jinja2.Environment(loader = jinja2.FileSystemLoader(template_dir), autoescape = True)
 
-
+def get_posts(limit, offset):
+    q = "SELECT * FROM Blog ORDER BY datetime_created DESC LIMIT {0} OFFSET {1}".format(limit, offset)
+    blogs = db.GqlQuery(q)
+    return blogs
 
 class Blog(db.Model):
     title = db.StringProperty(required = True)
@@ -41,7 +44,7 @@ class Index(Handler):
 
 class Main(Handler):
     def get(self):
-        blogs = db.GqlQuery("SELECT * FROM Blog ORDER BY datetime_created DESC LIMIT 5")
+        blogs = get_posts(5, 0)
         t = jinja_env.get_template("list.html")
         content = t.render(blogs = blogs)
         self.response.write(content)
