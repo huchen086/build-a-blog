@@ -74,9 +74,12 @@ class ViewPost(Handler):
     def get(self, id):
         id = int(id)
         b = Blog.get_by_id(id)
-        t = jinja_env.get_template("blog.html")
-        content = t.render(blog = b)
-        self.response.write(content)
+        if b:
+            t = jinja_env.get_template("blog.html")
+            content = t.render(blog = b)
+            self.response.write(content)
+        else:
+            self.renderError(404)
 
 app = webapp2.WSGIApplication([
     ('/', Index),
